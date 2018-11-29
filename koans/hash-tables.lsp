@@ -69,7 +69,7 @@
     "count how many unique key-value pairs in each"
     (assert-equal 2 (hash-table-count hash-table-eq))
     (assert-equal 1 (hash-table-count hash-table-equal))
-    (assert-equal 2 (hash-table-count hash-table-default))))
+    (assert-equal 2 (hash-table-count hash-table-default)))) ;; WHY
 
 
 (define-test test-hash-table-equality
