@@ -22,15 +22,17 @@
 
 ;;  YOU WRITE THIS PART:
 (defclass dice-set ()
-  () ;; WRITE DICE-SET CLASS BODY HERE
+  ((values :reader get-values :writer set-values)
+   (min-value :reader get-min-value :initform 1)
+   (max-value :reader get-max-value :initform 6))
 )
 
-(defmethod get-values ((object dice-set))
-  ;; WRITE GET-VALUES METHOD DEFINITION HERE
-)
+;(defmethod get-values ((object dice-set))
+;  (slot-value object 'values)
+;)
 
 (defmethod roll (how-many (object dice-set))
-  ;; WRITE ROLL METHOD DEFINITION HERE
+  (setf (slot-value object 'values) (loop for i from 0 below how-many collect (+ (get-min-value object) (random (get-max-value object)))))
 )
 
 
