@@ -49,6 +49,8 @@
 (define-condition triangle-error  (error) ())
 
 (defun triangle (a b c)
+  (if (some (lambda (x) (<= x 0)) (list a b c))
+    (error 'triangle-error))
   (if (fails-to-be-a-triangle (list a b c))
     (error 'triangle-error))
   (let* (
