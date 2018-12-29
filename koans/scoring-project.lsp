@@ -49,9 +49,37 @@
 ;
 ; Your goal is to write the score method.
 
+(defun score-not-three (die combo) 
+  (case die 	(1 (* combo 100))
+		(5 (* combo 50)	)
+		(t 0		)))
+
+(defun score-three (die)
+  (case die	(1 1000)
+    		(t (* die 100))))
+
+(defun score-r (dice prev combo total)
+  ;; run out of dice, calculate final score
+  (if (= (length dice) 0) 
+    (if (= combo 3) 
+      (+ total (score-three prev)) 
+      (+ total (score-not-three prev combo)))
+    (let ((cur (car dice)))
+      (if (or (/= cur prev) (= combo 3))
+	;; combo breaker, add up to total score
+	(if (= combo 3) 
+	  ;; reached max combo length and maybe got higher dice roll, 
+	  ;; but we don't care - we just reset combo to 1 anyways
+	  (score-r (cdr dice) cur 1 (+ total (score-three prev)))
+	  ;; we got a higher roll, calculate score from previous streak
+	  (score-r (cdr dice) cur 1 (+ total (score-not-three prev combo))))
+	;; continue comboing
+	(score-r (cdr dice) cur (+ 1 combo) total)))))
+
 (defun score (dice)
-  ; You need to write this method
-)
+  (let ((dice-inc (sort dice #'<)))
+    (score-r dice-inc 0 0 0)
+))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
