@@ -14,11 +14,51 @@
 
 
 "you need to write the triangle method"
+(defun flatten-1-level-down (l)
+  (loop for a in l appending a))
+
+(defun remove-one (what from-what)
+  (remove what from-what :count 1))
+
+(defun unique (a-list)
+  (remove-duplicates a-list :test #'equalp))
+
+(defun unordered-pairs (a-list) 
+  (mapcon (lambda (tail) (mapcar (lambda (x) (cons (car tail) x)) (cdr tail))) a-list))
+
+(defun orders-of-three (a-list-of-3) 
+  (unique (flatten-1-level-down (mapcar 
+    (lambda (_1st) 
+      (mapcar 
+	(lambda (_2nd) 
+	  (cons
+	    _1st
+	  (cons 
+	    _2nd
+	    (remove-one _2nd (remove-one _1st a-list-of-3))))) ;; '(_3rd)
+	(remove-one _1st a-list-of-3))) 
+    a-list-of-3))))
+
+(defun triangle-ineq-p (a b c) 
+  (> (+ a b) c))
+
+(defun fails-to-be-a-triangle (edges) 
+  (some (lambda (b) (not (or b nil))) 
+	(mapcar (lambda (x) (apply #'triangle-ineq-p x)) (orders-of-three edges))))
 
 (define-condition triangle-error  (error) ())
 
 (defun triangle (a b c)
-  :write-me)
+  (if (fails-to-be-a-triangle (list a b c))
+    (error 'triangle-error))
+  (let* (
+	(pairs (unordered-pairs (list a b c)))
+	(eq-for-pairs (mapcar (lambda (pair-b) (= (car pair-b) (cdr pair-b))) pairs)))
+    (cond
+      ((every #'identity eq-for-pairs) :equilateral) ;; hack for 'every element is true'
+      ((some #'identity eq-for-pairs) :isosceles)
+      (t :scalene))))
+
 
 
 (define-test test-equilateral-triangles-have-equal-sides
